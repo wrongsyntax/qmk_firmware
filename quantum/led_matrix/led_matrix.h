@@ -33,6 +33,10 @@
 #ifdef IS31FL3733
 #    include "is31fl3733-simple.h"
 #endif
+#ifdef SN32F26x
+#    include "sn32f26x.h"
+#endif
+
 
 #ifndef LED_MATRIX_LED_FLUSH_LIMIT
 #    define LED_MATRIX_LED_FLUSH_LIMIT 16

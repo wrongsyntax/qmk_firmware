@@ -19,6 +19,7 @@ DIP_SWITCH_ENABLE = yes
 
 # Custom RGB matrix handling
 RGB_MATRIX_ENABLE = yes
+RGB_MATRIX_CUSTOM_USER = yes
 RGB_MATRIX_DRIVER = SN32F24xB
 
 # project specific files

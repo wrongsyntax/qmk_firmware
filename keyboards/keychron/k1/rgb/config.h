@@ -38,7 +38,7 @@
 #define DIP_SWITCH_PINS { D4, D5 }
 
 /* LED Status indicators */
-#define LED_CAPS_LOCK_PIN B12
+#define LED_CAPS_LOCK_PIN B10
 #define LED_PIN_ON_STATE  1
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */

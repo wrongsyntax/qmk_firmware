@@ -18,5 +18,5 @@
 #define DRIVER_LED_TOTAL 87
 
 /* USB Device descriptor parameter */
-#define PRODUCT_ID      0x7040      //? Is this the correct PRODUCT_ID?
+#define PRODUCT_ID      0x7040
 #define DEVICE_VER		0x0001

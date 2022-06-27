@@ -4,7 +4,7 @@ K1 v4 Fixed Low Profile Gateron RGB
 
 Make example for this keyboard (after setting up your build environment):
 
-    this will be added later once the firmware is working
+    make keychron/k1/rgb/ansi:default
 
 * * *
 

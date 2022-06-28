@@ -33,6 +33,8 @@ enum layer_names {
 
 #define KC_MSSN LGUI(KC_F3)         // Mission Control
 #define KC_FIND LALT(LGUI(KC_SPC))  // Finder
+//! Launchpad keycode requires you to set up the keyboard shortcut in Settings > Keyboard > Shortcuts then set Launchpad to Option+Command+A
+#define KC_SPTL LGUI(KC_SPC)        // Spotlight
 #define KC_SIRI LGUI(KC_SPC)        // Siri
 #define KC_MSNP LSFT(LGUI(KC_4))    // Mac snip tool
 
@@ -97,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [MAC_FN] = LAYOUT_tkl_ansi( // Mac Fn overlay
-      RESET,            KC_BRID, KC_BRIU, KC_MSSN, KC_FIND, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU,         _______, _______, RGB_TOG,
+      RESET,            KC_BRID, KC_BRIU, KC_MSSN, KC_LNCH, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU,         _______, _______, RGB_TOG,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,         RGB_HUI, RGB_SAI, RGB_VAI,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,         RGB_HUD, RGB_SAD, RGB_VAD,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,

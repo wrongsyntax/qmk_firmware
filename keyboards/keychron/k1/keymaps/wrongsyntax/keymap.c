@@ -33,6 +33,8 @@ enum layer_names {
 
 #define KC_MSSN LGUI(KC_F3)         // Mission Control
 #define KC_FIND LALT(LGUI(KC_SPC))  // Finder
+//! Launchpad keycode requires you to set up the keyboard shortcut in Settings > Keyboard > Shortcuts then set Launchpad to Option+Command+A
+#define KC_LNCH LALT(LGUI(KC_A))    // Launchpad
 #define KC_SPTL LGUI(KC_SPC)        // Spotlight
 #define KC_MSNP LSFT(LGUI(KC_4))    // Mac snip tool
 
@@ -54,7 +56,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 */
 
     [WIN_BASE] = LAYOUT_tkl_ansi(
-        KC_CAPS,          KC_BRID, KC_BRIU, KC_MSSN, KC_FIND, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,   KC_VOLU,      KC_PSCR,  KC_CRTN,  RGB_MOD,
+        KC_CAPS,          KC_BRID, KC_BRIU, KC_TASK, KC_FLXP, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,   KC_VOLU,      KC_PSCR,  KC_CRTN,  RGB_MOD,
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,     KC_INS,   KC_HOME,  KC_PGUP,
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,     KC_DEL,   KC_END,   KC_PGDN,
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,
@@ -88,7 +90,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     */
 
   [MAC_BASE] = LAYOUT_tkl_ansi( // Mac base layout
-      KC_CAPS,          KC_BRID, KC_BRIU, KC_MSSN, KC_FIND, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,   KC_VOLU,      KC_MSNP,  KC_SPTL, RGB_MOD,
+      KC_CAPS,          KC_BRID, KC_BRIU, KC_MSSN, KC_LNCH, RGB_VAD, RGB_VAI, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,   KC_VOLU,      KC_MSNP,  KC_SPTL, RGB_MOD,
       KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,       KC_INS,  KC_HOME, KC_PGUP,
       KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,       KC_DEL,  KC_END,  KC_PGDN,
       KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,

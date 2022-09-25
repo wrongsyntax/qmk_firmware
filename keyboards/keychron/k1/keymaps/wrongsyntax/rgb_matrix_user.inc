@@ -2,6 +2,8 @@ RGB_MATRIX_EFFECT(ws_alpha_mods)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
+//TODO: The hex code #11ae91 is not correctly displayed on the keyboard
+
 static bool ws_alpha_mods(effect_params_t* params) {
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
 

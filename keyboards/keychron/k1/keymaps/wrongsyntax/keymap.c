@@ -68,16 +68,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,         RGB_HUI, RGB_SAI, RGB_VAI,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,         RGB_HUD, RGB_SAD, RGB_VAD,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-      _______, _______, _______, _______, _______, _______,  KC_NUM, _______, _______, _______, _______,          _______,                           RGB_SPI,
+      _______, _______, _______, _______, _______, _______,TG(_NUM), _______, _______, _______, _______,          _______,                           RGB_SPI,
       _______, _______, _______,                   _______,                                     _______, _______, _______, _______,         _______, RGB_SPD, _______
     ),
 
     [_NUM] = LAYOUT_tkl_ansi(
-        _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,        _______, _______, _______,
-        _______,  KC_P1,   KC_P2,   KC_P3,   KC_P4,   KC_P5,   KC_P6,   KC_P7,   KC_P8,   KC_P9,  KC_PMNS,  KC_PMNS, KC_PPLS, _______,        _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______,  KC_P4,   KC_P5,   KC_P6,  KC_PPLS, _______, _______, _______,        _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______,  KC_P1,   KC_P2,   KC_P3,  KC_PAST, _______,          _______,
-        _______, _______, _______, _______, _______, _______,  KC_NUM,  KC_P0,   KC_P0,  KC_PDOT, KC_PSLS,          _______,                          _______,
+        _______,          _______, _______, _______, _______, _______, _______, _______, _______, KC_PMNS, KC_PPLS, KC_PAST, KC_PSLS,         KC_P7,   KC_P8,   KC_P9,
+        _______,  KC_P1,   KC_P2,   KC_P3,   KC_P4,   KC_P5,   KC_P6,   KC_P7,   KC_P8,   KC_P9,  KC_PMNS, KC_PMNS, KC_PPLS, _______,         KC_P4,   KC_P5,   KC_P6,
+        _______, _______,  KC_UP,  _______, _______, _______, _______,  KC_P4,   KC_P5,   KC_P6,  KC_PPLS, _______, _______, _______,         KC_P1,   KC_P2,   KC_P3,
+        _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______,  KC_P1,   KC_P2,   KC_P3,  KC_PAST, _______,          _______,
+        _______, _______, _______, _______, _______, _______, TG(_NUM), KC_P0,   KC_P0,  KC_PDOT, KC_PSLS,          _______,                           KC_P0,
         _______, _______, _______,                   _______,                                     _______, _______, _______, _______,        _______, _______, _______
     )
 };
@@ -93,28 +93,46 @@ Blank layout
 
 */
 
+bool num_lock = false;
+bool fn = false;
+bool allow_caps = false;
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    switch (get_highest_layer(state)) {
+        case BASE:
+            rgb_matrix_set_color_all(0x00, 0x00, 0x00);
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_ws_alpha_mods);
+            num_lock = false;
+            allow_caps = true;
+            break;
+        case _FN:
+            rgb_matrix_set_color_all(0x00, 0x00, 0x00);
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_fn);
+            fn = true;
+            allow_caps = false;
+            break;
+        case _NUM:
+            rgb_matrix_set_color_all(0x00, 0x00, 0x00);
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_numpad);
+            num_lock = true;
+            break;
+        default: //  for any other layers, or the default layer
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_ws_alpha_mods);
+            break;
+    }
+    return state;
+}
+
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     led_t led_state = host_keyboard_led_state();
-    // Caps Lock setup
-    if (led_state.caps_lock) {
-        rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_caps);
-    } else {
-        rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_regular);
-    }
 
-    // if (led_state.num_lock) {
-    //     rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_caps);
-    //     // switch (get_highest_layer(layer_state)) {
-    //     //     case _NUM:
-    //     //         rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_numpad);
-    //     //         break;
-    //     //     default:
-    //     //         rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_ws_alpha_mods);
-    //     //         break;
-    //     // }
-    // } else {
-    //     rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_regular);
-    // }
+    if (allow_caps) {
+        if (led_state.caps_lock) {
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_caps);
+        } else {
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_mod_alpha_regular);
+        }
+    }
 }
 
 bool dip_switch_update_user(uint8_t index, bool active){

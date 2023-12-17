@@ -146,6 +146,21 @@ const uint8_t LED_LIST_FUNCROW[] = {
     LED_RGB
 };
 
+const uint8_t LED_LIST_FN[] = {
+    LED_F1,
+    LED_F2,
+    LED_F3,
+    LED_F4,
+    LED_F5,
+    LED_F6,
+    LED_F7,
+    LED_F8,
+    LED_F9,
+    LED_F10,
+    LED_F11,
+    LED_F12
+};
+
 const uint8_t LED_LIST_NUMROW[] = {
     LED_GRV,
     LED_1,
@@ -196,25 +211,38 @@ const uint8_t LED_LIST_LETTERS[] = {
 };
 
 const uint8_t LED_LIST_NUMPAD_NUMS[] = {
-    LED_M,
     LED_COMM,
-    LED_DOT,
+    LED_UP,
     LED_J,
+    LED_DEL,
     LED_K,
+    LED_END,
     LED_L,
+    LED_PGDN,
     LED_U,
+    LED_INS,
     LED_I,
+    LED_HOME,
     LED_O,
+    LED_PGUP,
     LED_7,
+    LED_SCR,
     LED_8,
-    LED_9
+    LED_SPTL,
+    LED_9,
+    LED_RGB
 };
 
 const uint8_t LED_LIST_NUMPAD_OPS[] = {
     LED_0,
     LED_P,
     LED_SCLN,
-    LED_SLSH
+    LED_SLSH,
+    LED_DOT,
+    LED_F9,
+    LED_F10,
+    LED_F11,
+    LED_F12
 };
 
 const uint8_t LED_LIST_TOP_RIGHT_KB[] = {

@@ -28,6 +28,40 @@ enum layer_names {
     _NUM            = 2,
 };
 
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP,
+    TD_DOUBLE_HOLD,
+    TD_DOUBLE_SINGLE_TAP, // Send two single taps
+    TD_TRIPLE_TAP,
+    TD_TRIPLE_HOLD
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    FNNUM,
+    WLSFT,
+    WRSFT,
+};
+
+td_state_t cur_dance(qk_tap_dance_state_t *state);
+
+void fn_finished(qk_tap_dance_state_t *state, void *user_data);
+void fn_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void wlsft_finished(qk_tap_dance_state_t *state, void *user_data);
+void wlsft_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void wrsft_finished(qk_tap_dance_state_t *state, void *user_data);
+void wrsft_reset(qk_tap_dance_state_t *state, void *user_data);
+
 #define ENABLE_COMPILE_KEYCODE
 
 #define KC_MSSN LGUI(KC_F3)         // Mission Control
@@ -59,8 +93,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,    KC_BSPC,       KC_INS,  KC_HOME, KC_PGUP,
       KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC,   KC_BSLS,       KC_DEL,  KC_END,  KC_PGDN,
       KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,            KC_ENT,
-      KC_LSPO, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSPC,                           KC_UP,
-      KC_LCTL, KC_LALT, KC_LGUI,                   KC_SPC,                                      KC_RGUI, KC_RALT, MO(_FN),   KC_RCTL,       KC_LEFT, KC_DOWN, KC_RGHT
+    TD(WLSFT), KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          TD(WRSFT),                          KC_UP,
+      KC_LCTL, KC_LALT, KC_LGUI,                   KC_SPC,                                      KC_RGUI, KC_RALT, TD(FNNUM), KC_RCTL,       KC_LEFT, KC_DOWN, KC_RGHT
   ),
 
   [_FN] = LAYOUT_tkl_ansi( // Mac Fn overlay
@@ -78,7 +112,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______,  KC_UP,  _______, _______, _______, _______,  KC_P4,   KC_P5,   KC_P6,  KC_PPLS, _______, _______, _______,         KC_P1,   KC_P2,   KC_P3,
         _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, _______,  KC_P1,   KC_P2,   KC_P3,  KC_PAST, _______,          _______,
         _______, _______, _______, _______, _______, _______, TG(_NUM), KC_P0,   KC_P0,  KC_PDOT, KC_PSLS,          _______,                           KC_P0,
-        _______, _______, _______,                   _______,                                     _______, _______, _______, _______,        _______, _______, _______
+        _______, _______, _______,                   _______,                                     _______, _______,TG(_NUM), _______,        _______, _______, _______
     )
 };
 
@@ -112,9 +146,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             allow_caps = false;
             break;
         case _NUM:
+            num_lock = true;
+            allow_caps = false;
             rgb_matrix_set_color_all(0x00, 0x00, 0x00);
             rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_numpad);
-            num_lock = true;
             break;
         default: //  for any other layers, or the default layer
             rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_ws_alpha_mods);
@@ -160,10 +195,166 @@ void suspend_wakeup_init_user(void) {
     rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_ws_alpha_mods);
 }
 
-void keyboard_post_init_user(void) {
-    // Customise these values to desired behaviour
-    //debug_enable=true;
-    //debug_matrix=true;
-    //debug_keyboard=true;
-    //debug_mouse=true;
+td_state_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        // Key has not been interrupted, but the key is still held. Means you want to send a 'HOLD'.
+        // state->interrupted || state->pressed is the original condition. state->interrupted is removed to allow permissive hold style functionality.
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) {
+        // TD_DOUBLE_SINGLE_TAP is to distinguish between typing "pepper", and actually wanting a double tap
+        // action when hitting 'pp'. Suggested use case for this return value is when you want to send two
+        // keystrokes of the key, and not the 'double tap' action/macro.
+        if (state->pressed) return TD_DOUBLE_HOLD;
+        else return TD_DOUBLE_TAP;
+    }
+
+    // Assumes no one is trying to type the same letter three times (at least not quickly).
+    // If your tap dance key is 'KC_W', and you want to type "www." quickly - then you will need to add
+    // an exception here to return a 'TD_TRIPLE_SINGLE_TAP', and define that enum just like 'TD_DOUBLE_SINGLE_TAP'
+    if (state->count == 3) {
+        if (state->interrupted || !state->pressed) return TD_TRIPLE_TAP;
+        else return TD_TRIPLE_HOLD;
+    } else return TD_UNKNOWN;
+}
+
+static td_tap_t fn_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+static td_tap_t wlsft_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+static td_tap_t wrsft_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void fn_finished(qk_tap_dance_state_t *state, void *user_data) {
+    fn_tap_state.state = cur_dance(state);
+    switch (fn_tap_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_on(_FN);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_on(_NUM);
+            break;
+        default:
+            break;
+    }
+}
+
+void fn_reset(qk_tap_dance_state_t *state, void *user_data) {
+    if (fn_tap_state.state == TD_SINGLE_HOLD) {
+        layer_off(_FN);
+    }
+    fn_tap_state.state = TD_NONE;
+}
+
+// Send a ( on single tap, [ on double tap, and { on triple tap for the WLSFT tap dance. Send Shift when held.
+void wlsft_finished(qk_tap_dance_state_t *state, void *user_data) {
+    wlsft_tap_state.state = cur_dance(state);
+    switch (wlsft_tap_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_LSFT);
+            register_code(KC_9);
+            break;
+        case TD_DOUBLE_TAP:
+            register_code(KC_LBRC);
+            break;
+        case TD_TRIPLE_TAP:
+            register_code(KC_LSFT);
+            register_code(KC_LBRC);
+            break;
+        case TD_SINGLE_HOLD:
+            register_code(KC_LSFT);
+            break;
+        default:
+            break;
+    }
+}
+
+void wlsft_reset(qk_tap_dance_state_t *state, void *user_data) {
+    switch (wlsft_tap_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_LSFT);
+            unregister_code(KC_9);
+            break;
+        case TD_DOUBLE_TAP:
+            unregister_code(KC_LBRC);
+            break;
+        case TD_TRIPLE_TAP:
+            unregister_code(KC_LSFT);
+            unregister_code(KC_LBRC);
+            break;
+        case TD_SINGLE_HOLD:
+            unregister_code(KC_LSFT);
+            break;
+        default:
+            break;
+    }
+    wlsft_tap_state.state = TD_NONE;
+}
+
+// Send ) on single tap, ] on double tap, and } on triple tap for the WRSFT tap dance. Send Shift when held.
+void wrsft_finished(qk_tap_dance_state_t *state, void *user_data) {
+    wrsft_tap_state.state = cur_dance(state);
+    switch (wrsft_tap_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_RSFT);
+            register_code(KC_0);
+            break;
+        case TD_DOUBLE_TAP:
+            register_code(KC_RBRC);
+            break;
+        case TD_TRIPLE_TAP:
+            register_code(KC_RSFT);
+            register_code(KC_RBRC);
+            break;
+        case TD_SINGLE_HOLD:
+            register_code(KC_RSFT);
+            break;
+        default:
+            break;
+    }
+}
+
+void wrsft_reset(qk_tap_dance_state_t *state, void *user_data) {
+    switch (wrsft_tap_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_RSFT);
+            unregister_code(KC_0);
+            break;
+        case TD_DOUBLE_TAP:
+            unregister_code(KC_RBRC);
+            break;
+        case TD_TRIPLE_TAP:
+            unregister_code(KC_RSFT);
+            unregister_code(KC_RBRC);
+            break;
+        case TD_SINGLE_HOLD:
+            unregister_code(KC_RSFT);
+            break;
+        default:
+            break;
+    }
+    wrsft_tap_state.state = TD_NONE;
+}
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [FNNUM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, fn_finished, fn_reset),
+    [WLSFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, wlsft_finished, wlsft_reset),
+    [WRSFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, wrsft_finished, wrsft_reset),
+};
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+            return 150;
+        default:
+            return TAPPING_TERM;
+    }
 }

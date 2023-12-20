@@ -76,6 +76,7 @@ static bool numpad(effect_params_t* params) {
     }
 
     rgb_matrix_set_color(LED_N, RGB_RED);
+    rgb_matrix_set_color(LED_FN, RGB_RED);
 
     return rgb_matrix_check_finished_leds(LED_MAX);
 }
@@ -93,4 +94,3 @@ static bool fn(effect_params_t* params) {
 }
 
 #endif
-

@@ -12,14 +12,18 @@ RGB_MATRIX_EFFECT(fn)
 #define RGB_WS_GREEN 0x00, 0x45, 0x08
 // #define RGB_WS_GOLD 0x54, 0x4A, 0x00
 #define RGB_WS_GOLD RGB_GOLD
+#define RBG_WS_PURPLE 0x45, 0x1E, 0x5D
+
+#define RGB_WS_PRIMARY 0x00, 0x45, 0x08 // RGB_WS_GREEN
+#define RGB_WS_SECONDARY 0x45, 0x1E, 0x5D // RGB_WS_PURPLE
 
 static bool ws_alpha_mods(effect_params_t* params) {
     for (uint8_t i = LED_MIN; i <= LED_MAX; i++) {
         RGB_MATRIX_TEST_LED_FLAGS();
         if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER)) {
-            rgb_matrix_set_color(i, RGB_WS_GOLD);
+            rgb_matrix_set_color(i, RGB_WS_SECONDARY);
         } else {
-            rgb_matrix_set_color(i, RGB_WS_GREEN);
+            rgb_matrix_set_color(i, RGB_WS_PRIMARY);
         }
     }
 
@@ -40,7 +44,7 @@ static bool mod_alpha_caps(effect_params_t* params) {
 
 static bool mod_alpha_regular(effect_params_t* params) {   
     for (uint8_t i = 0; i < ARRAY_SIZE(LED_LIST_LETTERS); i++) {
-        rgb_matrix_set_color(LED_LIST_LETTERS[i], RGB_WS_GREEN);
+        rgb_matrix_set_color(LED_LIST_LETTERS[i], RGB_WS_PRIMARY);
     }
 
     rgb_matrix_set_color(LED_CAPS, RGB_GREEN);
@@ -64,11 +68,11 @@ static bool numpad(effect_params_t* params) {
         //     rgb_matrix_set_color(LED_LIST_NUMPAD_NUMS[i], RGB_YELLOW);
         //     rgb_matrix_set_color(LED_LIST_NUMPAD_NUMS[i + 1], RGB_YELLOW);
         // }
-        rgb_matrix_set_color(LED_LIST_NUMPAD_NUMS[i], RGB_WS_GREEN);
+        rgb_matrix_set_color(LED_LIST_NUMPAD_NUMS[i], RGB_WS_PRIMARY);
     }
 
     for (uint8_t i = 0; i < ARRAY_SIZE(LED_LIST_NUMPAD_OPS); i++) {
-        rgb_matrix_set_color(LED_LIST_NUMPAD_OPS[i], RGB_WS_GOLD);
+        rgb_matrix_set_color(LED_LIST_NUMPAD_OPS[i], RGB_WS_SECONDARY);
     }
 
     for (uint8_t i = 0; i < ARRAY_SIZE(LED_LIST_WASD); i++) {
@@ -83,7 +87,7 @@ static bool numpad(effect_params_t* params) {
 
 static bool fn(effect_params_t* params) {
     rgb_matrix_set_color(LED_CAPS, RGB_RED);
-    rgb_matrix_set_color(LED_N, RGB_WS_GREEN);
+    rgb_matrix_set_color(LED_N, RGB_WS_PRIMARY);
     rgb_matrix_set_color(LED_RGB, RGB_GREEN);
 
     for (uint8_t i = 0; i < ARRAY_SIZE(LED_LIST_FN); i++) {

@@ -1,2 +1,2 @@
 TAP_DANCE_ENABLE = yes
-# NKRO_ENABLE = no
+NKRO_ENABLE = yes
